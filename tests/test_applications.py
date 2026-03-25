@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 
-from app.main import app, repository
+from app.main import app
+from app.routes.applications import repository
 
 client = TestClient(app)
 
