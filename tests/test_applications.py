@@ -3,14 +3,17 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.routes.applications import repository
 
+# Create a test client for the FastAPI app
 client = TestClient(app)
 
 
+# Reset in-memory storage before each test
 def setup_function() -> None:
     repository._applications.clear()
     repository._next_id = 1
 
 
+# Verify the applications list is empty at the start
 def test_list_applications_starts_empty() -> None:
     response = client.get("/applications")
 
@@ -18,6 +21,7 @@ def test_list_applications_starts_empty() -> None:
     assert response.json() == []
 
 
+# Verify a new application can be created successfully
 def test_create_application() -> None:
     payload = {
         "company": "Google",
@@ -40,6 +44,7 @@ def test_create_application() -> None:
     assert data["status"] == "applied"
 
 
+# Verify a single application can be retrieved by ID
 def test_get_application_by_id() -> None:
     payload = {
         "company": "Microsoft",
@@ -61,6 +66,7 @@ def test_get_application_by_id() -> None:
     assert response.json()["company"] == "Microsoft"
 
 
+# Verify an existing application can be updated
 def test_update_application() -> None:
     create_payload = {
         "company": "Amazon",
@@ -96,6 +102,7 @@ def test_update_application() -> None:
     assert data["notes"] == "First interview scheduled"
 
 
+# Verify an application can be deleted
 def test_delete_application() -> None:
     payload = {
         "company": "Apple",
@@ -118,6 +125,7 @@ def test_delete_application() -> None:
     assert get_response.status_code == 404
 
 
+# Verify a missing application returns 404
 def test_get_missing_application_returns_404() -> None:
     response = client.get("/applications/999")
 
